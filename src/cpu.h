@@ -4,31 +4,31 @@
 #include <stdio.h>
 #include "types.h"
 #include "registers.h"
+#include "util.h"
 
-#define RESET_VECTOR (bword) 0xbfc00000
-#define RESET_STATUS (bword) 0x00000000
+#define RESET_VECTOR (word) 0x00000000
+#define RESET_STATUS (word) 0x00000000
 
-#define CPU_MEM_SIZE (bword) 0xffffffff
+#define CPU_MEM_SIZE (word) 0xffffffff
 
 typedef struct {
-    bword registers[NUM_REGISTERS];
-    bword* memory;
+    word registers[NUM_REGISTERS];
+    byte* memory;
 
-    bword pc;
-    bword epc;
-    bword cause;
-    bword badvaddr;
-    bword status;
-    bword hi;
-    bword lo;
-} BCPU;
+    word pc;
+    word epc;
+    word cause;
+    word badvaddr;
+    word status;
+    word hi;
+    word lo;
+} CPU;
 
-#include "util.h"
 #include "instruction.h"
 
-BCPU* cpu_new();
+CPU* cpu_new();
 
-InstructionInfo cpu_decode(BCPU* cpu);
-bword cpu_step(BCPU* cpu);
+void cpu_decode(CPU* cpu);
+word cpu_step(CPU* cpu);
 
 #endif

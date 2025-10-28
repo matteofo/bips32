@@ -26,6 +26,6 @@
   BYTE_TO_BINARY(word >> 8), \
   BYTE_TO_BINARY(word)
 
-#define EACH(iter, array) (bword iter = 0; iter < sizeof(array) / sizeof(array[0]); iter++)
+#define EACH(iter, array) (word iter = 0; iter < sizeof(array) / sizeof(array[0]); iter++)
 
 #endif

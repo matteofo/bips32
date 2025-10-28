@@ -1,103 +1,141 @@
 #ifndef BIPS32_INSTRUCTION_H
 #define BIPS32_INSTRUCTION_H
 
+#include "registers.h"
 #include "types.h"
 #include "cpu.h"
 
-#define GET_OPCODE(x) (x >> (BYTES(sizeof(bword)) - 6))
-#define GET_FUNCT(x) (x & 0b111111)
+#define STEP(x) x->pc += 4
 
-#define GET_RS(x) ((x >> (BYTES(sizeof(bword)) - 6 - 5)) & 0b11111)
-#define GET_RT(x) ((x >> (BYTES(sizeof(bword)) - 6 - 5 - 5)) & 0b11111)
-#define GET_RD(x) ((x >> (BYTES(sizeof(bword)) - 6 - 5 - 5 - 5)) & 0b11111)
-#define GET_SHAMT(x) ((x >> (BYTES(sizeof(bword)) - 6 - 5 - 5 - 5 - 5)) & 0b11111)
+#define GET_INSTRUCTION(p, i)  ((p[i] << 24) & 0xff000000) | ((p[i + 1] << 16) & 0xff0000) | ((p[i + 2] << 8) & 0xff00) | (p[i + 3] & 0xff)
+#define GET_OPCODE(x)       (x >> (BYTES(sizeof(word)) - 6))
+#define GET_FUNCT(x)        (x & 0b111111)
 
+#define GET_RS(x)           ((x >> (BYTES(sizeof(word)) - 11)) & 0b11111)
+#define GET_RT(x)           ((x >> (BYTES(sizeof(word)) - 16)) & 0b11111)
+#define GET_RD(x)           ((x >> (BYTES(sizeof(word)) - 21)) & 0b11111)
+#define GET_SHAMT(x)        ((x >> (BYTES(sizeof(word)) - 26)) & 0b11111)
+
+#define GET_IMMEDIATE(x)    (x & 0xffff)
+
+#define GET_ADDRESS(x)      (x & 0x3ffffff)
 
 typedef enum {
-    R_TYPE = (bword) 0,
+    R_TYPE = (word) 0,
     I_TYPE,
     J_TYPE
 } InstructionType;
 
-typedef void (*InstructionHandler)(BCPU* cpu);
+typedef void (*InstructionHandler)(CPU* cpu);
 
 typedef struct {
     InstructionType type;
-    bbyte code;
+    byte code;
     char* mnemonic;
     InstructionHandler handler;
 } InstructionInfo;
+
+// instruction handlers
+#define DEFINE_HANDLER(name) void name (CPU* cpu)
+
+DEFINE_HANDLER(instr_handler_add);
+DEFINE_HANDLER(instr_handler_addu);
+DEFINE_HANDLER(instr_handler_addi);
+DEFINE_HANDLER(instr_handler_addiu);
+
+DEFINE_HANDLER(instr_handler_and);
+DEFINE_HANDLER(instr_handler_andi);
+
+DEFINE_HANDLER(instr_handler_div);
+DEFINE_HANDLER(instr_handler_divu);
+
+DEFINE_HANDLER(instr_handler_mult);
+DEFINE_HANDLER(instr_handler_multu);
+
+DEFINE_HANDLER(instr_handler_nor);
+DEFINE_HANDLER(instr_handler_or);
+DEFINE_HANDLER(instr_handler_ori);
+
+DEFINE_HANDLER(instr_handler_j);
 
 static const InstructionInfo INSTRUCTION_TABLE[] = {
     (InstructionInfo) {
         .code = 0b100000,
         .mnemonic = "add",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_add
     },
     (InstructionInfo) {
         .code = 0b100001,
         .mnemonic = "addu",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_addu
     },
     (InstructionInfo) {
         .code = 0b001000,
         .mnemonic = "addi",
-        .type = I_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_addi
     },
     (InstructionInfo) {
         .code = 0b001001,
         .mnemonic = "addiu",
-        .type = I_TYPE
-    },
-    (InstructionInfo) {
-        .code = 0b001001,
-        .mnemonic = "addiu",
-        .type = I_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_addiu
     },
     (InstructionInfo) {
         .code = 0b100100,
         .mnemonic = "and",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_and
     },
     (InstructionInfo) {
         .code = 0b001100,
         .mnemonic = "andi",
-        .type = I_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_andi
     },
     (InstructionInfo) {
         .code = 0b011010,
         .mnemonic = "div",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_div
     },
     (InstructionInfo) {
         .code = 0b011011,
         .mnemonic = "divu",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_divu
     },
     (InstructionInfo) {
         .code = 0b011000,
         .mnemonic = "mult",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_mult
     },
     (InstructionInfo) {
         .code = 0b011001,
         .mnemonic = "multu",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_multu
     },
     (InstructionInfo) {
         .code = 0b100111,
         .mnemonic = "nor",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_nor
     },
     (InstructionInfo) {
         .code = 0b100101,
         .mnemonic = "or",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_or
     },
     (InstructionInfo) {
         .code = 0b001101,
         .mnemonic = "ori",
-        .type = I_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_ori
     },
     (InstructionInfo) {
         .code = 0b000000,
@@ -175,7 +213,7 @@ static const InstructionInfo INSTRUCTION_TABLE[] = {
         .type = I_TYPE
     },
     (InstructionInfo) {
-        .code = 0b001001,
+        .code = 0b001011,
         .mnemonic = "sltiu",
         .type = I_TYPE
     },
@@ -202,7 +240,8 @@ static const InstructionInfo INSTRUCTION_TABLE[] = {
     (InstructionInfo) {
         .code = 0b000010,
         .mnemonic = "j",
-        .type = J_TYPE
+        .type = J_TYPE,
+        .handler = instr_handler_j
     },
     (InstructionInfo) {
         .code = 0b000011,
@@ -212,12 +251,12 @@ static const InstructionInfo INSTRUCTION_TABLE[] = {
     (InstructionInfo) {
         .code = 0b001001,
         .mnemonic = "jalr",
-        .type = J_TYPE
+        .type = R_TYPE
     },
     (InstructionInfo) {
         .code = 0b001000,
         .mnemonic = "jr",
-        .type = J_TYPE
+        .type = R_TYPE
     },
     (InstructionInfo) {
         .code = 0b100000,

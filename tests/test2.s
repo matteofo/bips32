@@ -1,7 +1,7 @@
     .text
     .globl main
 main:
+    li $t0, 0
 loop:
-    li $t0, 1
     addi $t0, $t0, 1
     j loop
