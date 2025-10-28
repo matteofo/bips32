@@ -8,10 +8,11 @@
 #define RESET_VECTOR (bword) 0xbfc00000
 #define RESET_STATUS (bword) 0x00000000
 
+#define CPU_MEM_SIZE (bword) 0xffffffff
+
 typedef struct {
     bword registers[NUM_REGISTERS];
     bword* memory;
-    bword memory_size;
 
     bword pc;
     bword epc;
@@ -25,9 +26,9 @@ typedef struct {
 #include "util.h"
 #include "instruction.h"
 
-BCPU* cpu_new(bword memsize);
+BCPU* cpu_new();
 
 InstructionInfo cpu_decode(BCPU* cpu);
-void cpu_step(BCPU* cpu);
+bword cpu_step(BCPU* cpu);
 
 #endif
