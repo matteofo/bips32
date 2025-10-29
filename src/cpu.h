@@ -2,6 +2,7 @@
 #define BIPS32_CPU_H
 
 #include <stdio.h>
+#include <stdbool.h>
 #include "types.h"
 #include "registers.h"
 #include "util.h"
@@ -28,7 +29,7 @@ typedef struct {
 
 CPU* cpu_new();
 
-void cpu_decode(CPU* cpu);
-word cpu_step(CPU* cpu);
+void cpu_decode(CPU* cpu, bool silent);
+word cpu_step(CPU* cpu, bool silent);
 
 #endif

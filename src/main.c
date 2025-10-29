@@ -1,7 +1,18 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #include "cpu.h"
 #include "io.h"
+
+void print_help() {
+    printf("bips32: janky mips32 emulator\n");
+    printf("\n");
+    printf("USAGE:\n");
+    printf("\tbips32 [flags] [path to mips32 binary]\n");
+    printf("FLAGS:\n");
+    printf("\t-h: prints this message\n");
+    printf("\t-i: enables interactive mode\n");
+}
 
 /* reads a program from file
  * @param path file path to an assembled mips32 program
@@ -11,7 +22,9 @@ word* read_program_from_file(char* path, word* size) {
     FILE* f = fopen(path, "rb");
 
     if (!f) {
-        return NULL;
+        print_help();
+        printf("\nneed a file!\n");
+        exit(1);
     }
 
     // get file size
@@ -84,13 +97,24 @@ void print_mem(CPU* cpu) {
 
 int main(int argc, char** argv) {
     CPU* cpu = cpu_new();
+    bool interactive = false;
 
-    if (argc != 2) {
-        printf("need a file!\n");
-        return 1;
+    if (argc < 2) {
+        print_help();
+        printf("\nneed a file!\n");
+        exit(1);
     }
 
-    char* prog_path = argv[1];
+    for (int i = 0; i < argc; i++) {
+        if (strcmp(argv[i], "-h") == 0) {
+            print_help();
+            exit(0);
+        } else if (strcmp(argv[i], "-i") == 0) {
+            interactive = true;
+        }
+    }
+
+    char* prog_path = argv[argc - 1];
     
     word program_size = 0;
     word* program = read_program_from_file(prog_path, &program_size);
@@ -99,8 +123,12 @@ int main(int argc, char** argv) {
     // run program until out of words
     word counter = 0;
     do {
-        counter = cpu_step(cpu);
+        counter = cpu_step(cpu, !interactive);
+        if (!interactive) continue;
+        
         read:
+        printf("(r=registers, m=memory) ");
+        
         char c = getchar();
         if (c == 'r') {
             print_regs(cpu);
@@ -113,7 +141,8 @@ int main(int argc, char** argv) {
         }
     } while(counter < (RESET_VECTOR) + program_size * 4);
 
-    printf("reached end of program.\n");
+    if (interactive)
+        printf("reached end of program.\n");
 
     return 0;
 }

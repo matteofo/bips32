@@ -597,4 +597,39 @@ DEFINE_HANDLER(instr_handler_mtlo) {
     cpu->registers[rs] = cpu->lo;
 
     STEP(cpu);
+} 
+
+DEFINE_HANDLER(instr_handler_syscall) {
+    word number = cpu->registers[REG_V0];
+    if (number > (sizeof(SYSCALL_TABLE) / sizeof(SYSCALL_TABLE[0]))) {
+        printf(" invalid syscall number (%d)! ", number);
+        STEP(cpu);
+        return;
+    }
+
+    SYSCALL_TABLE[number - 1](cpu);
+    STEP(cpu);
+}
+
+DEFINE_HANDLER(syscall_handler_dummy) {
+
+}
+
+DEFINE_HANDLER(syscall_handler_print_int) {
+    s_word value = cpu->registers[REG_A0];
+    printf("%d", value);
+}
+
+DEFINE_HANDLER(syscall_handler_print_string) {
+    char* address = (char*) cpu->registers[REG_A0];
+    printf("%s", address);
+}
+
+DEFINE_HANDLER(syscall_handler_exit) {
+    exit(0);
+}
+
+DEFINE_HANDLER(syscall_handler_exit2) {
+    s_word code = cpu->registers[REG_A0];
+    exit(code);
 }

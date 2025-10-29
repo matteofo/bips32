@@ -109,6 +109,8 @@ DEFINE_HANDLER(instr_handler_mflo);
 DEFINE_HANDLER(instr_handler_mthi);
 DEFINE_HANDLER(instr_handler_mtlo);
 
+DEFINE_HANDLER(instr_handler_syscall);
+
 static const InstructionInfo INSTRUCTION_TABLE[] = {
     (InstructionInfo) {
         .code = 0b100000,
@@ -403,7 +405,40 @@ static const InstructionInfo INSTRUCTION_TABLE[] = {
         .mnemonic = "mtlo",
         .type = R_TYPE,
         .handler = instr_handler_mtlo
+    },
+    (InstructionInfo) {
+        .code = 0b001100,
+        .mnemonic = "syscall",
+        .type = R_TYPE,
+        .handler = instr_handler_syscall
     }
+};
+
+DEFINE_HANDLER(syscall_handler_dummy);
+
+DEFINE_HANDLER(syscall_handler_print_int);
+DEFINE_HANDLER(syscall_handler_print_string);
+DEFINE_HANDLER(syscall_handler_exit);
+DEFINE_HANDLER(syscall_handler_exit2);
+
+static const InstructionHandler SYSCALL_TABLE[] = {
+    syscall_handler_print_int,
+    syscall_handler_dummy,
+    syscall_handler_dummy,
+    syscall_handler_print_string,
+    syscall_handler_dummy,
+    syscall_handler_dummy,
+    syscall_handler_dummy,
+    syscall_handler_dummy,
+    syscall_handler_dummy,
+    syscall_handler_exit,
+    syscall_handler_dummy,
+    syscall_handler_dummy,
+    syscall_handler_dummy,
+    syscall_handler_dummy,
+    syscall_handler_dummy,
+    syscall_handler_dummy,
+    syscall_handler_exit2
 };
 
 #endif

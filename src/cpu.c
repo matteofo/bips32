@@ -21,29 +21,28 @@ CPU* cpu_new() {
     return cpu;
 }
 
-void _instr_run(CPU* cpu, InstructionInfo info) {
+void _instr_run(CPU* cpu, InstructionInfo info, bool silent) {
     if (!info.handler) {
-        printf("(%s unimplemented) ", info.mnemonic);
+        if (!silent)
+            printf("(%s unimplemented) ", info.mnemonic);
+        
         STEP(cpu);
         return;
     }
 
     info.handler(cpu);
-    printf("(%s) ", info.mnemonic);
+
+    if (!silent)
+        printf("(%s) ", info.mnemonic);
 }
 
 // decodes a cpu instruction and runs it
-void cpu_decode(CPU* cpu) {
+void cpu_decode(CPU* cpu, bool silent) {
     word instruction = GET_INSTRUCTION(cpu->memory, cpu->pc);
     byte opcode = GET_OPCODE(instruction);
 
-    //printf("[pc %x]: " WORD_TO_BINARY_PATTERN ", " BYTE_TO_BINARY_PATTERN " ",
-    //    cpu->pc, 
-    //    WORD_TO_BINARY(instruction),
-    //    BYTE_TO_BINARY(opcode)
-    //);
-
-    printf("[pc %x]: %x ", cpu->pc, instruction);
+    if (!silent)
+        printf("[pc %08x]: %08x ", cpu->pc, instruction);
 
     // R-types all have zero opcodes
     // all other instructions are either I-types or J-types
@@ -55,7 +54,7 @@ void cpu_decode(CPU* cpu) {
             const InstructionInfo info = INSTRUCTION_TABLE[i];
             if (info.type == R_TYPE && funct == info.code) {
                 // run instruction
-                _instr_run(cpu, info);
+                _instr_run(cpu, info, silent);
                 return;
             }
         }
@@ -63,7 +62,7 @@ void cpu_decode(CPU* cpu) {
         for EACH(i, INSTRUCTION_TABLE) {
             const InstructionInfo info = INSTRUCTION_TABLE[i];
             if (info.type != R_TYPE && opcode == info.code) {
-                _instr_run(cpu, info);
+                _instr_run(cpu, info, silent);
                 return;
             }
         }
@@ -72,8 +71,8 @@ void cpu_decode(CPU* cpu) {
     STEP(cpu);
 }
 
-word cpu_step(CPU* cpu) {
-    cpu_decode(cpu);
+word cpu_step(CPU* cpu, bool silent) {
+    cpu_decode(cpu, silent);
     
     return cpu->pc;
 }
