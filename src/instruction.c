@@ -275,7 +275,7 @@ DEFINE_HANDLER(instr_handler_xor) {
 }
 
 
-DEFINE_HANDLER(instr_handler_xor) {
+DEFINE_HANDLER(instr_handler_xori) {
     word instruction = GET_INSTRUCTION(cpu->memory, cpu->pc);
     
     byte rd = GET_RD(instruction);
