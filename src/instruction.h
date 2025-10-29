@@ -76,6 +76,7 @@ DEFINE_HANDLER(instr_handler_subu);
 DEFINE_HANDLER(instr_handler_xor);
 DEFINE_HANDLER(instr_handler_xori);
 
+DEFINE_HANDLER(instr_handler_lui);
 DEFINE_HANDLER(instr_handler_lhi);
 DEFINE_HANDLER(instr_handler_llo);
 
@@ -249,6 +250,12 @@ static const InstructionInfo INSTRUCTION_TABLE[] = {
         .mnemonic = "xori",
         .type = I_TYPE,
         .handler = instr_handler_xori
+    },
+    (InstructionInfo) {
+        .code = 0b001111,
+        .mnemonic = "lui",
+        .type = I_TYPE,
+        .handler = instr_handler_lui
     },
     (InstructionInfo) {
         .code = 0b011001,

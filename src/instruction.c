@@ -1,5 +1,10 @@
 #include "instruction.h"
 
+// NOTE: unsigned variants are actually the same!
+// after some research, it turns out that the non-u
+// variants just trap on overflows. i'll have to
+// implement that at some point
+
 // rd = rs + rt
 DEFINE_HANDLER(instr_handler_add) {
     word instruction = GET_INSTRUCTION(cpu->memory, cpu->pc);
@@ -20,7 +25,7 @@ DEFINE_HANDLER(instr_handler_addu) {
     byte rt = GET_RT(instruction);
     byte rd = GET_RD(instruction);
 
-    cpu->registers[rd] = cpu->registers[rs] + cpu->registers[rt];
+    cpu->registers[rd] = (s_word) cpu->registers[rs] + (s_word) cpu->registers[rt];
     STEP(cpu);
 }
 
@@ -44,7 +49,7 @@ DEFINE_HANDLER(instr_handler_addiu) {
     word rt = GET_RT(instruction);
     hword immediate = GET_IMMEDIATE(instruction);
 
-    cpu->registers[rt] = cpu->registers[rs] + immediate;
+    cpu->registers[rt] = cpu->registers[rs] + (s_hword) immediate;
     STEP(cpu);
 }
 
@@ -95,8 +100,8 @@ DEFINE_HANDLER(instr_handler_divu) {
     byte rt = GET_RT(instruction);
     byte rd = GET_RD(instruction);
 
-    cpu->lo = cpu->registers[rs] / cpu->registers[rt];
-    cpu->hi = cpu->registers[rs] % cpu->registers[rt];
+    cpu->lo = (s_word) cpu->registers[rs] / (s_word) cpu->registers[rt];
+    cpu->hi = (s_word) cpu->registers[rs] % (s_word) cpu->registers[rt];
     STEP(cpu);
 }
 
@@ -124,7 +129,7 @@ DEFINE_HANDLER(instr_handler_multu) {
     byte rt = GET_RT(instruction);
     byte rd = GET_RD(instruction);
 
-    dword result = (dword) cpu->registers[rs] * (dword) cpu->registers[rt];
+    dword result = (s_dword) cpu->registers[rs] * (s_dword) cpu->registers[rt];
     cpu->hi = (result >> 32) & 0xffffffff;
     cpu->lo = result & 0xffffffff;
     STEP(cpu);
@@ -257,7 +262,7 @@ DEFINE_HANDLER(instr_handler_subu) {
     byte rd = GET_RD(instruction);
     byte rs = GET_RS(instruction);
 
-    cpu->registers[rd] = cpu->registers[rs] - cpu->registers[rt];
+    cpu->registers[rd] = (s_word) cpu->registers[rs] - (s_word) cpu->registers[rt];
 
     STEP(cpu);
 }
@@ -283,6 +288,17 @@ DEFINE_HANDLER(instr_handler_xori) {
     hword immediate = GET_IMMEDIATE(instruction);
 
     cpu->registers[rd] = cpu->registers[rs] ^ immediate;
+
+    STEP(cpu);
+}
+
+DEFINE_HANDLER(instr_handler_lui) {
+    word instruction = GET_INSTRUCTION(cpu->memory, cpu->pc);
+    
+    byte rt = GET_RT(instruction);
+    hword immediate = GET_IMMEDIATE(instruction);
+
+    cpu->registers[rt] = immediate << 16;
 
     STEP(cpu);
 }
@@ -616,12 +632,12 @@ DEFINE_HANDLER(syscall_handler_dummy) {
 }
 
 DEFINE_HANDLER(syscall_handler_print_int) {
-    s_word value = cpu->registers[REG_A0];
+    s_word value = (s_word) cpu->registers[REG_A0];
     printf("%d", value);
 }
 
 DEFINE_HANDLER(syscall_handler_print_string) {
-    char* address = (char*) cpu->registers[REG_A0];
+    char* address = (char*) (cpu->memory + cpu->registers[REG_A0]);
     printf("%s", address);
 }
 

@@ -7,7 +7,7 @@
 #include "registers.h"
 #include "util.h"
 
-#define RESET_VECTOR (word) 0x00000000
+#define RESET_VECTOR (word) 0x00008000
 #define RESET_STATUS (word) 0x00000000
 
 #define CPU_MEM_SIZE (word) 0xffffffff
