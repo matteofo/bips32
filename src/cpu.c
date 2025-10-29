@@ -23,13 +23,13 @@ CPU* cpu_new() {
 
 void _instr_run(CPU* cpu, InstructionInfo info) {
     if (!info.handler) {
-        printf(" (%s unimplemented) ", info.mnemonic);
+        printf("(%s unimplemented) ", info.mnemonic);
         STEP(cpu);
         return;
     }
 
     info.handler(cpu);
-    printf(" (%s) ", info.mnemonic);
+    printf("(%s) ", info.mnemonic);
 }
 
 // decodes a cpu instruction and runs it
@@ -43,7 +43,7 @@ void cpu_decode(CPU* cpu) {
     //    BYTE_TO_BINARY(opcode)
     //);
 
-    printf("[pc %x]: %x", cpu->pc, instruction);
+    printf("[pc %x]: %x ", cpu->pc, instruction);
 
     // R-types all have zero opcodes
     // all other instructions are either I-types or J-types

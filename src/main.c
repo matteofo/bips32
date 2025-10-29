@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include <sys/endian.h>
 #include "cpu.h"
 #include "io.h"
 
