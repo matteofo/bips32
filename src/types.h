@@ -13,5 +13,6 @@ typedef uint16_t hword;
 typedef int16_t s_hword;
 
 typedef uint8_t byte;
+typedef int8_t s_byte;
 
 #endif

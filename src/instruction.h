@@ -7,7 +7,11 @@
 
 #define STEP(x) x->pc += 4
 
-#define GET_INSTRUCTION(p, i)  ((p[i] << 24) & 0xff000000) | ((p[i + 1] << 16) & 0xff0000) | ((p[i + 2] << 8) & 0xff00) | (p[i + 3] & 0xff)
+#define GET_INSTRUCTION(p, i) ((p[i] << 24) & 0xff000000) | ((p[i + 1] << 16) & 0xff0000) | ((p[i + 2] << 8) & 0xff00) | (p[i + 3] & 0xff)
+
+#define GET_HWORD(p, i)     ((p[i] << 8) & 0xff00) | (p[i + 1] & 0xff)
+#define GET_WORD(p, i)      GET_INSTRUCTION(p, i)
+
 #define GET_OPCODE(x)       (x >> (BYTES(sizeof(word)) - 6))
 #define GET_FUNCT(x)        (x & 0b111111)
 
@@ -56,7 +60,51 @@ DEFINE_HANDLER(instr_handler_nor);
 DEFINE_HANDLER(instr_handler_or);
 DEFINE_HANDLER(instr_handler_ori);
 
+DEFINE_HANDLER(instr_handler_sll);
+DEFINE_HANDLER(instr_handler_sllv);
+DEFINE_HANDLER(instr_handler_sra);
+DEFINE_HANDLER(instr_handler_srav);
+DEFINE_HANDLER(instr_handler_srl);
+DEFINE_HANDLER(instr_handler_srlv);
+
+DEFINE_HANDLER(instr_handler_sub);
+DEFINE_HANDLER(instr_handler_subu);
+
+DEFINE_HANDLER(instr_handler_xor);
+DEFINE_HANDLER(instr_handler_xori);
+
+DEFINE_HANDLER(instr_handler_lhi);
+DEFINE_HANDLER(instr_handler_llo);
+
+DEFINE_HANDLER(instr_handler_slt);
+DEFINE_HANDLER(instr_handler_sltu);
+DEFINE_HANDLER(instr_handler_slti);
+DEFINE_HANDLER(instr_handler_sltiu);
+
+DEFINE_HANDLER(instr_handler_beq);
+DEFINE_HANDLER(instr_handler_bgtz);
+DEFINE_HANDLER(instr_handler_blez);
+DEFINE_HANDLER(instr_handler_bne);
+
 DEFINE_HANDLER(instr_handler_j);
+DEFINE_HANDLER(instr_handler_jal);
+DEFINE_HANDLER(instr_handler_jalr);
+DEFINE_HANDLER(instr_handler_jr);
+
+DEFINE_HANDLER(instr_handler_lb);
+DEFINE_HANDLER(instr_handler_lbu);
+DEFINE_HANDLER(instr_handler_lh);
+DEFINE_HANDLER(instr_handler_lhu);
+DEFINE_HANDLER(instr_handler_lw);
+
+DEFINE_HANDLER(instr_handler_sb);
+DEFINE_HANDLER(instr_handler_sh);
+DEFINE_HANDLER(instr_handler_sw);
+
+DEFINE_HANDLER(instr_handler_mfhi);
+DEFINE_HANDLER(instr_handler_mflo);
+DEFINE_HANDLER(instr_handler_mthi);
+DEFINE_HANDLER(instr_handler_mtlo);
 
 static const InstructionInfo INSTRUCTION_TABLE[] = {
     (InstructionInfo) {
@@ -140,102 +188,122 @@ static const InstructionInfo INSTRUCTION_TABLE[] = {
     (InstructionInfo) {
         .code = 0b000000,
         .mnemonic = "sll",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_sll
     },
     (InstructionInfo) {
         .code = 0b000100,
         .mnemonic = "sllv",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_sllv
     },
     (InstructionInfo) {
         .code = 0b000011,
         .mnemonic = "sra",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_sra
     },
     (InstructionInfo) {
         .code = 0b000111,
         .mnemonic = "srav",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_srav
     },
     (InstructionInfo) {
         .code = 0b000010,
         .mnemonic = "srl",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_srl
     },
     (InstructionInfo) {
         .code = 0b000110,
         .mnemonic = "srlv",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_srlv
     },
     (InstructionInfo) {
         .code = 0b100010,
         .mnemonic = "sub",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_sub
     },
     (InstructionInfo) {
         .code = 0b100011,
         .mnemonic = "subu",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_subu
     },
     (InstructionInfo) {
         .code = 0b100110,
         .mnemonic = "xor",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_xor
     },
     (InstructionInfo) {
         .code = 0b001110,
         .mnemonic = "xori",
-        .type = I_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_xori
     },
     (InstructionInfo) {
         .code = 0b011001,
         .mnemonic = "lhi",
-        .type = I_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_lhi
     },
     (InstructionInfo) {
         .code = 0b011000,
         .mnemonic = "llo",
-        .type = I_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_llo
     },
     (InstructionInfo) {
         .code = 0b101010,
         .mnemonic = "slt",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_slt
     },
     (InstructionInfo) {
         .code = 0b101001,
         .mnemonic = "sltu",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_sltu
     },
     (InstructionInfo) {
         .code = 0b001010,
         .mnemonic = "slti",
-        .type = I_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_slti
     },
     (InstructionInfo) {
         .code = 0b001011,
         .mnemonic = "sltiu",
-        .type = I_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_sltiu
     },
     (InstructionInfo) {
         .code = 0b000100,
         .mnemonic = "beq",
-        .type = J_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_beq
     },
     (InstructionInfo) {
         .code = 0b000111,
         .mnemonic = "bgtz",
-        .type = J_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_bgtz
     },
     (InstructionInfo) {
         .code = 0b000110,
         .mnemonic = "blez",
-        .type = J_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_blez
     },
     (InstructionInfo) {
         .code = 0b000101,
         .mnemonic = "bne",
-        .type = J_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_bne
     },
     (InstructionInfo) {
         .code = 0b000010,
@@ -246,77 +314,92 @@ static const InstructionInfo INSTRUCTION_TABLE[] = {
     (InstructionInfo) {
         .code = 0b000011,
         .mnemonic = "jal",
-        .type = J_TYPE
+        .type = J_TYPE,
+        .handler = instr_handler_jal
     },
     (InstructionInfo) {
         .code = 0b001001,
         .mnemonic = "jalr",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_jalr
     },
     (InstructionInfo) {
         .code = 0b001000,
         .mnemonic = "jr",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_jr
     },
     (InstructionInfo) {
         .code = 0b100000,
         .mnemonic = "lb",
-        .type = I_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_lb
     },
     (InstructionInfo) {
         .code = 0b100100,
         .mnemonic = "lbu",
-        .type = I_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_lbu
     },
     (InstructionInfo) {
         .code = 0b100001,
         .mnemonic = "lh",
-        .type = I_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_lh
     },
     (InstructionInfo) {
         .code = 0b100101,
         .mnemonic = "lhu",
-        .type = I_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_lhu
     },
     (InstructionInfo) {
         .code = 0b100011,
         .mnemonic = "lw",
-        .type = I_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_lw
     },
     (InstructionInfo) {
         .code = 0b101000,
         .mnemonic = "sb",
-        .type = I_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_sb
     },
     (InstructionInfo) {
         .code = 0b101001,
         .mnemonic = "sh",
-        .type = I_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_sh
     },
     (InstructionInfo) {
         .code = 0b101011,
         .mnemonic = "sw",
-        .type = I_TYPE
+        .type = I_TYPE,
+        .handler = instr_handler_sw
     },
     (InstructionInfo) {
         .code = 0b010000,
         .mnemonic = "mfhi",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_mfhi
     },
     (InstructionInfo) {
         .code = 0b010010,
         .mnemonic = "mflo",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_mflo
     },
     (InstructionInfo) {
         .code = 0b010001,
         .mnemonic = "mthi",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_mthi
     },
     (InstructionInfo) {
         .code = 0b010011,
         .mnemonic = "mtlo",
-        .type = R_TYPE
+        .type = R_TYPE,
+        .handler = instr_handler_mtlo
     }
 };
 
