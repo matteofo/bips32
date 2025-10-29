@@ -41,6 +41,7 @@ word* read_program_from_file(char* path, word* size) {
 // prints the status of the cpu registers
 void print_regs(CPU* cpu) {
     printf("\n");
+    printf("===REGISTER DUMP===\n\n");
 
     for (byte i = 0; i < NUM_REGISTERS; i++) {
         printf("$%u: %u; ", i, cpu->registers[i]);
@@ -49,7 +50,37 @@ void print_regs(CPU* cpu) {
         }
     }
 
-    printf("\n\n");
+    printf("\n");
+    printf("===END REGISTER DUMP===");
+    printf("\n");
+}
+
+void print_mem(CPU* cpu) {
+    word start = 0;
+    word end = 0;
+
+    printf("start address? ");
+    scanf("%x", &start);
+
+    printf("end address? ");
+    scanf("%x", &end);
+
+    printf("\n");
+    printf("===MEMORY DUMP===\n\n");
+
+    for (word i = start; i < end; i+=8) {
+        printf("$%08x ", i);
+
+        for (word j = i; j < i + 8; j++) {
+            printf("%02x ", cpu->memory[j]);
+        }
+
+        printf("\n");
+    }
+
+    printf("\n");
+    printf("===END MEMORY DUMP===");
+    printf("\n");
 }
 
 int main(int argc, char** argv) {
@@ -70,9 +101,16 @@ int main(int argc, char** argv) {
     word counter = 0;
     do {
         counter = cpu_step(cpu);
+        read:
         char c = getchar();
-        if (c == 'p') {
+        if (c == 'r') {
             print_regs(cpu);
+            getchar();
+            getchar();
+        } else if (c == 'm') {
+            print_mem(cpu);
+            getchar();
+            getchar();
         }
     } while(counter < (RESET_VECTOR) + program_size * 4);
 

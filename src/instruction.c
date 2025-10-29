@@ -525,7 +525,7 @@ DEFINE_HANDLER(instr_handler_sb) {
 
     s_word address = cpu->registers[rs] + immediate;
 
-    cpu->memory[address] = (word) cpu->registers[rt] & 0xff;
+    cpu->memory[address] = (byte) cpu->registers[rt] & 0xff;
 
     STEP(cpu);
 }
@@ -540,7 +540,7 @@ DEFINE_HANDLER(instr_handler_sh) {
 
     s_word address = cpu->registers[rs] + immediate;
 
-    cpu->memory[address] = (word) GET_HWORD(cpu->memory, address);
+    SET_HWORD(cpu->memory, address, cpu->registers[rt]);
 
     STEP(cpu);
 }
@@ -554,7 +554,7 @@ DEFINE_HANDLER(instr_handler_sw) {
 
     s_word address = cpu->registers[rs] + immediate;
 
-    cpu->memory[address] = GET_WORD(cpu->memory, address);
+    SET_WORD(cpu->memory, address, cpu->registers[rt]);
 
     STEP(cpu);
 }

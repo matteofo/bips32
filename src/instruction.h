@@ -12,6 +12,9 @@
 #define GET_HWORD(p, i)     ((p[i] << 8) & 0xff00) | (p[i + 1] & 0xff)
 #define GET_WORD(p, i)      GET_INSTRUCTION(p, i)
 
+#define SET_HWORD(p, i, v)  p[i] = (v >> 8) & 0xff; p[i + 1] = v & 0xff
+#define SET_WORD(p, i, v)   p[i] = (v >> 24) & 0xff; p[i + 1] = (v >> 16) & 0xff; p[i + 2] = (v >> 8) & 0xff; p[i+3] = v & 0xff
+
 #define GET_OPCODE(x)       (x >> (BYTES(sizeof(word)) - 6))
 #define GET_FUNCT(x)        (x & 0b111111)
 
