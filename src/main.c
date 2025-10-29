@@ -50,7 +50,7 @@ void print_regs(CPU* cpu) {
         }
     }
 
-    printf("\n");
+    printf("\n\n");
     printf("===END REGISTER DUMP===");
     printf("\n");
 }
@@ -106,11 +106,11 @@ int main(int argc, char** argv) {
         if (c == 'r') {
             print_regs(cpu);
             getchar();
-            getchar();
+            goto read;
         } else if (c == 'm') {
             print_mem(cpu);
             getchar();
-            getchar();
+            goto read;
         }
     } while(counter < (RESET_VECTOR) + program_size * 4);
 
