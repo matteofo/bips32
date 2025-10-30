@@ -2,6 +2,8 @@
 #define BIPS32_IO_H
 
 #include <stdio.h>
+#include <assert.h>
+
 #ifndef __APPLE__
 #include <byteswap.h>
 #define bswap32 bswap_32

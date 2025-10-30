@@ -46,6 +46,8 @@ word* read_program_from_file(char* path, word* size) {
     for (word i = 0; i < word_size; i++) {
         program[i] = bswap32(program[i]);
     }
+
+    *size = word_size;
     
     return program;
 }
