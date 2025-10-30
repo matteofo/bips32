@@ -5,7 +5,9 @@ all:
 
 clean:
 	rm -rf bips32
-	rm -rf tests/*.bin
+	cd tests; ./clean.sh;
+	cd tests/c; ./clean.sh;
 
 tests:
 	cd tests; ./compileall.sh
+	cd tests/c; ./compileall.sh

@@ -424,13 +424,14 @@ static const InstructionInfo INSTRUCTION_TABLE[] = {
 DEFINE_HANDLER(syscall_handler_dummy);
 
 DEFINE_HANDLER(syscall_handler_print_int);
+DEFINE_HANDLER(syscall_handler_print_float);
 DEFINE_HANDLER(syscall_handler_print_string);
 DEFINE_HANDLER(syscall_handler_exit);
 DEFINE_HANDLER(syscall_handler_exit2);
 
 static const InstructionHandler SYSCALL_TABLE[] = {
     syscall_handler_print_int,
-    syscall_handler_dummy,
+    syscall_handler_print_float,
     syscall_handler_dummy,
     syscall_handler_print_string,
     syscall_handler_dummy,

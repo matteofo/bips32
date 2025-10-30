@@ -636,6 +636,13 @@ DEFINE_HANDLER(syscall_handler_print_int) {
     printf("%d", value);
 }
 
+DEFINE_HANDLER(syscall_handler_print_float) {
+    word w = cpu->registers[REG_A0];
+    float value = (float) cpu->registers[REG_A0];
+    printf("0x%x ", w);
+    printf("%f", value);
+}
+
 DEFINE_HANDLER(syscall_handler_print_string) {
     char* address = (char*) (cpu->memory + cpu->registers[REG_A0]);
     printf("%s", address);
