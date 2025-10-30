@@ -58,7 +58,7 @@ void print_regs(CPU* cpu) {
     printf("===REGISTER DUMP===\n\n");
 
     for (byte i = 0; i < NUM_REGISTERS; i++) {
-        printf("$%u: %u; ", i, cpu->registers[i]);
+        printf("$%u: %x; ", i, cpu->registers[i]);
         if (i % 8 == 0 && i != 0) {
             printf("\n");
         }
@@ -87,6 +87,10 @@ void print_mem(CPU* cpu) {
 
         for (word j = i; j < i + 8; j++) {
             printf("%02x ", cpu->memory[j]);
+        }
+
+        for (word j = i; j < i + 8; j++) {
+            printf("%c ", cpu->memory[j]);
         }
 
         printf("\n");

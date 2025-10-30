@@ -7,8 +7,9 @@ CPU* cpu_new() {
     for (byte i = 0; i < NUM_REGISTERS; i++) {
         cpu->registers[i] = 0;
     }
-    
+
     cpu->memory = ARRAY(byte, CPU_MEM_SIZE);
+    cpu->registers[REG_SP] = RESET_STACKP;
 
     cpu->pc = RESET_VECTOR;
     cpu->epc = 0;
@@ -30,10 +31,10 @@ void _instr_run(CPU* cpu, InstructionInfo info, bool silent) {
         return;
     }
 
-    info.handler(cpu);
-
     if (!silent)
         printf("(%s) ", info.mnemonic);
+        
+    info.handler(cpu);
 }
 
 // decodes a cpu instruction and runs it

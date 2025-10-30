@@ -49,7 +49,7 @@ DEFINE_HANDLER(instr_handler_addiu) {
     word rt = GET_RT(instruction);
     hword immediate = GET_IMMEDIATE(instruction);
 
-    cpu->registers[rt] = cpu->registers[rs] + (s_hword) immediate;
+    cpu->registers[rt] = (s_word) cpu->registers[rs] + (s_hword) immediate;
     STEP(cpu);
 }
 
@@ -439,7 +439,7 @@ DEFINE_HANDLER(instr_handler_jal) {
     word instruction = GET_INSTRUCTION(cpu->memory, cpu->pc);
     word address = GET_ADDRESS(instruction);
 
-    cpu->registers[REG_RA] = cpu->pc;
+    cpu->registers[REG_RA] = cpu->pc + 8;
     cpu->pc = (cpu->pc & 0xf0000000) | (address << 2);
 }
 
@@ -448,7 +448,7 @@ DEFINE_HANDLER(instr_handler_jalr) {
 
     word rs = GET_RS(instruction);
 
-    cpu->registers[REG_RA] = cpu->pc;
+    cpu->registers[REG_RA] = cpu->pc + 8;
     cpu->pc = cpu->registers[rs];
 }
 

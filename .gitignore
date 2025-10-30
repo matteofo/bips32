@@ -2,3 +2,4 @@ bips32
 .vscode/
 .DS_Store
 tests/*.bin
+*.dSYM

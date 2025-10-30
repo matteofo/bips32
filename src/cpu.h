@@ -9,6 +9,7 @@
 
 #define RESET_VECTOR (word) 0x00008000
 #define RESET_STATUS (word) 0x00000000
+#define RESET_STACKP (word) 0x7ffffffc
 
 #define CPU_MEM_SIZE (word) 0xffffffff
 
