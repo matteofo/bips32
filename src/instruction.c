@@ -381,7 +381,7 @@ DEFINE_HANDLER(instr_handler_beq) {
     s_hword immediate = GET_IMMEDIATE(instruction);
 
     if (cpu->registers[rs] == cpu->registers[rt]) {
-        cpu->pc += immediate << 2;
+        cpu->pc += (immediate << 2) + 4;
     } else {
         STEP(cpu);
     }
@@ -394,7 +394,7 @@ DEFINE_HANDLER(instr_handler_bgtz) {
     s_hword immediate = GET_IMMEDIATE(instruction);
 
     if ((s_word) cpu->registers[rs] > 0) {
-        cpu->pc += immediate << 2;
+        cpu->pc += (immediate << 2) + 4;
     } else {
         STEP(cpu);
     }
@@ -407,7 +407,7 @@ DEFINE_HANDLER(instr_handler_blez) {
     s_hword immediate = GET_IMMEDIATE(instruction);
 
     if ((s_word) cpu->registers[rs] <= 0) {
-        cpu->pc += immediate << 2;
+        cpu->pc += (immediate << 2) + 4;
     } else {
         STEP(cpu);
     }
@@ -421,7 +421,7 @@ DEFINE_HANDLER(instr_handler_bne) {
     s_hword immediate = GET_IMMEDIATE(instruction);
 
     if (cpu->registers[rs] != cpu->registers[rt]) {
-        cpu->pc += immediate << 2;
+        cpu->pc += (immediate << 2) + 4;
     } else {
         STEP(cpu);
     }
@@ -617,8 +617,8 @@ DEFINE_HANDLER(instr_handler_mtlo) {
 
 DEFINE_HANDLER(instr_handler_syscall) {
     word number = cpu->registers[REG_V0];
-    if (number > (sizeof(SYSCALL_TABLE) / sizeof(SYSCALL_TABLE[0]))) {
-        printf(" invalid syscall number (%d)! ", number);
+    if (number > (sizeof(SYSCALL_TABLE) / sizeof(SYSCALL_TABLE[0])) || number <= 0) {
+        printf("invalid syscall number %d (pc: %08x) ", number, cpu->pc);
         STEP(cpu);
         return;
     }
@@ -638,8 +638,9 @@ DEFINE_HANDLER(syscall_handler_print_int) {
 
 DEFINE_HANDLER(syscall_handler_print_float) {
     word w = cpu->registers[REG_A0];
-    float value = (float) cpu->registers[REG_A0];
-    printf("0x%x ", w);
+
+    float value = *((float*) &cpu->registers[REG_A0]);
+    printf(WORD_TO_BINARY_PATTERN "\n", WORD_TO_BINARY(w));
     printf("%f", value);
 }
 

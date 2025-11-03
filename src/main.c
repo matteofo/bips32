@@ -57,14 +57,11 @@ void print_regs(CPU* cpu) {
     printf("\n");
     printf("===REGISTER DUMP===\n\n");
 
-    for (byte i = 0; i < NUM_REGISTERS; i++) {
-        printf("$%u: %x; ", i, cpu->registers[i]);
-        if (i % 8 == 0 && i != 0) {
-            printf("\n");
-        }
+    for (byte i = 1; i < NUM_REGISTERS; i++) {
+        printf("$%s = %08x\n", regname(i), cpu->registers[i]);
     }
 
-    printf("\n\n");
+    printf("\n");
     printf("===END REGISTER DUMP===");
     printf("\n");
 }

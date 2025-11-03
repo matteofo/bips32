@@ -8,8 +8,8 @@ int main() {
         print_string("\n");
     }
 
-    float a = 0.01f;
-    print_float(a);
+    float a = 0.12f;
+    print_float(a + 1);
 
     return 0;
 }

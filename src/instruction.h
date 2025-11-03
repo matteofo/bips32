@@ -86,6 +86,9 @@ DEFINE_HANDLER(instr_handler_slti);
 DEFINE_HANDLER(instr_handler_sltiu);
 
 DEFINE_HANDLER(instr_handler_beq);
+// instructions bgez, bgezal, bltz, bltzal
+// are all grouped under opcode 000001
+DEFINE_HANDLER(instr_handler_branch_compound);
 DEFINE_HANDLER(instr_handler_bgtz);
 DEFINE_HANDLER(instr_handler_blez);
 DEFINE_HANDLER(instr_handler_bne);
@@ -298,6 +301,11 @@ static const InstructionInfo INSTRUCTION_TABLE[] = {
         .mnemonic = "beq",
         .type = I_TYPE,
         .handler = instr_handler_beq
+    },
+    (InstructionInfo) {
+        .code = 0b000001,
+        .mnemonic = "bgez/bgezal/bltz/bltzal",
+        .type = I_TYPE
     },
     (InstructionInfo) {
         .code = 0b000111,
